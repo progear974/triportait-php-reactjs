@@ -14,67 +14,82 @@ class Shooting
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $code = null;
+    #[ORM\Column(length: 12, nullable: true)]
+    private ?string $code = null;
 
-    #[ORM\Column]
-    private ?int $nb_photos = null;
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $date = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $path = null;
+    private ?string $folder = null;
 
     #[ORM\Column(type: Types::ARRAY)]
-    private array $filenames = [];
+    private array $single_filenames = [];
+
+    #[ORM\Column(length: 255)]
+    private ?string $print_filename = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getCode(): ?\DateTimeInterface
+    public function getCode(): ?string
     {
         return $this->code;
     }
 
-    public function setCode(\DateTimeInterface $code): self
+    public function setCode(?string $code): self
     {
         $this->code = $code;
 
         return $this;
     }
 
-    public function getNbPhotos(): ?int
+    public function getDate(): ?\DateTimeInterface
     {
-        return $this->nb_photos;
+        return $this->date;
     }
 
-    public function setNbPhotos(int $nb_photos): self
+    public function setDate(\DateTimeInterface $date): self
     {
-        $this->nb_photos = $nb_photos;
+        $this->date = $date;
 
         return $this;
     }
 
-    public function getPath(): ?string
+    public function getFolder(): ?string
     {
-        return $this->path;
+        return $this->folder;
     }
 
-    public function setPath(string $path): self
+    public function setFolder(string $folder): self
     {
-        $this->path = $path;
+        $this->folder = $folder;
 
         return $this;
     }
 
-    public function getFilenames(): array
+    public function getSingleFilenames(): array
     {
-        return $this->filenames;
+        return $this->single_filenames;
     }
 
-    public function setFilenames(array $filenames): self
+    public function setSingleFilenames(array $single_filenames): self
     {
-        $this->filenames = $filenames;
+        $this->single_filenames = $single_filenames;
+
+        return $this;
+    }
+
+    public function getPrintFilename(): ?string
+    {
+        return $this->print_filename;
+    }
+
+    public function setPrintFilename(string $print_filename): self
+    {
+        $this->print_filename = $print_filename;
 
         return $this;
     }

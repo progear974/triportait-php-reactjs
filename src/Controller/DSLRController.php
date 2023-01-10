@@ -64,4 +64,20 @@ class DSLRController extends AbstractController
             'path' => 'src/Controller/DSLRController.php',
         ]);
     }
+
+    #[Route('/shooting', name: 'shooting')]
+    public function shooting(ShootingRepository $shootingRepository): JsonResponse
+    {
+        $shootings = $shootingRepository->findAll();
+        $arr = [];
+        foreach ($shootings as $shooting) {
+            $arr[] = [
+                "id" => $shooting->getId(),
+                "folder" => $shooting->getFolder(),
+                "code" => $shooting->getPrintFilename(),
+                "date" => $shooting->getDate()
+            ];
+        }
+        return $this->json($arr);
+    }
 }

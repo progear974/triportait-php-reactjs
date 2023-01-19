@@ -29,6 +29,9 @@ class Shooting
     #[ORM\Column(length: 255)]
     private ?string $print_filename = null;
 
+    #[ORM\Column]
+    private ?bool $zip = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -90,6 +93,18 @@ class Shooting
     public function setPrintFilename(string $print_filename): self
     {
         $this->print_filename = $print_filename;
+
+        return $this;
+    }
+
+    public function isZip(): ?bool
+    {
+        return $this->zip;
+    }
+
+    public function setZip(bool $zip): self
+    {
+        $this->zip = $zip;
 
         return $this;
     }

@@ -12,6 +12,8 @@ use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 
 class DSLRController extends AbstractController
 {
@@ -35,6 +37,7 @@ class DSLRController extends AbstractController
                 $id += 1;
             }
             $last = utf8_decode(array_pop($paths));
+            $logger->alert($last);
             $arr = explode("\\", $last);
             $good_key = null;
             foreach ($arr as $key => $value) {
@@ -46,6 +49,7 @@ class DSLRController extends AbstractController
             foreach ($paths as $key => $value)
             {
                 $paths[$key] = basename($value);
+                $logger->alert($paths[$key]);
             }
             $folder = $arr[$good_key];
             $shooting = new Shooting();
@@ -54,15 +58,45 @@ class DSLRController extends AbstractController
             $shooting->setCode(null);
             $shooting->setDate(new \DateTime());
             $shooting->setPrintFilename(array_pop($arr));
+            $shooting->setZip(false);
             $entityManager->persist($shooting);
             $entityManager->flush();
-            $logger->error($last);
-            $logger->error($folder);
         }
         return $this->json([
             'message' => 'Welcome to your new controller!',
             'path' => 'src/Controller/DSLRController.php',
         ]);
+    }
+
+    #[Route('/download/{filename}', name: 'download_filename')]
+    public function download($filename)
+    {
+        $extension = pathinfo($filename, PATHINFO_EXTENSION);
+        $zip_folder_path = $_ENV["DATA_ROOT_FOLDER"] . "/" . $_ENV["FOLDER_ZIP"];
+        $singles_folder_path = $_ENV["DATA_ROOT_FOLDER"] . "/" . $_ENV["FOLDER_SINGLES"];
+
+        if ($extension == "zip") {
+            $response = new BinaryFileResponse($zip_folder_path . "/" . $filename);
+        } else {
+            $response = new BinaryFileResponse($singles_folder_path . "/" . $filename);
+        }
+
+        $response->setContentDisposition(HeaderUtils::DISPOSITION_ATTACHMENT, $filename);
+        return $response;
+    }
+
+    #[Route('/photos/{code}', name: 'link_photo')]
+    public function link_photo(ShootingRepository $shootingRepository, $code)
+    {
+        $shooting = $shootingRepository->findOneBy([
+            "code" => $code
+        ]);
+        $arr_url = [];
+        $arr_url[] = $_ENV["URL_PUBLIC"] . "/" . $_ENV["FOLDER_PRINTS"] . "/" . $shooting->getFolder() . "/" . $shooting->getPrintFilename();
+        foreach ($shooting->getSingleFilenames() as $filename) {
+            $arr_url[] = $_ENV["URL_PUBLIC"] . "/" . $_ENV["FOLDER_SINGLES"] . "/" . $shooting->getFolder() . "/" . $filename;
+        }
+        return $this->json(["code" => $code, "urls" => $arr_url, "date" => $shooting->getDate()]);
     }
 
     #[Route('/shooting', name: 'shooting')]

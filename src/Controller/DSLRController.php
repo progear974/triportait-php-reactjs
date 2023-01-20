@@ -15,6 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 
+#[Route('/api', name: 'api')]
 class DSLRController extends AbstractController
 {
     /*
@@ -92,9 +93,9 @@ class DSLRController extends AbstractController
             "code" => $code
         ]);
         $arr_url = [];
-        $arr_url[] = $_ENV["URL_PUBLIC"] . "/" . $_ENV["FOLDER_PRINTS"] . "/" . $shooting->getFolder() . "/" . $shooting->getPrintFilename();
+        $arr_url[] = $_ENV["URL_PUBLIC"] . "/" . "images" . "/" .$_ENV["FOLDER_PRINTS"] . "/" . $shooting->getPrintFilename();
         foreach ($shooting->getSingleFilenames() as $filename) {
-            $arr_url[] = $_ENV["URL_PUBLIC"] . "/" . $_ENV["FOLDER_SINGLES"] . "/" . $shooting->getFolder() . "/" . $filename;
+            $arr_url[] = $_ENV["URL_PUBLIC"] . "/" . "images" . "/" .$_ENV["FOLDER_SINGLES"] . "/" . $filename;
         }
         return $this->json(["code" => $code, "urls" => $arr_url, "date" => $shooting->getDate()]);
     }

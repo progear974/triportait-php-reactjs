@@ -73,7 +73,6 @@ class ZipImageCommand extends Command
                 print_r("Pas toutes les photos télécharger !\n");
                 continue;
             }
-            $this->zippingService->zipSession($shooting->getCode());
             $pathPrintFolderToCopy = $_ENV["DATA_ROOT_FOLDER"] . "/" . $shooting->getFolder() . "/" . $_ENV["FOLDER_PRINTS"];
             $pathSinglesFolderToCopy = $_ENV["DATA_ROOT_FOLDER"] . "/" . $shooting->getFolder() . "/" . $_ENV["FOLDER_SINGLES"];
             print_r($pathPrintFolderToCopy);

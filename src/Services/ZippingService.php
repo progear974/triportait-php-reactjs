@@ -34,7 +34,6 @@ class ZippingService
         $zip->open($this->appKernel->getProjectDir() . "/" . "public" . "/" . "zip" . "/" . $code . ".zip",  ZipArchive::CREATE);
         foreach ($arr_url as $url) {
             print_r($url);
-            print_r(basename($url));
             $zip->addFile("{$url}", basename($url));
         }
         $zip->close();

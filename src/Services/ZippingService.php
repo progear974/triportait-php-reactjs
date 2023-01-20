@@ -29,9 +29,12 @@ class ZippingService
         foreach ($shooting->getSingleFilenames() as $filename) {
             $arr_url[] = $_ENV["DATA_ROOT_FOLDER"] . "/" . $shooting->getFolder() . "/" . $_ENV["FOLDER_SINGLES"] . "/" . $filename;
         }
+
         $zip = new ZipArchive();
         $zip->open($this->appKernel->getProjectDir() . "/" . "public" . "/" . "zip" . "/" . $code . ".zip",  ZipArchive::CREATE);
         foreach ($arr_url as $url) {
+            print_r($url);
+            print_r(basename($url));
             $zip->addFile("{$url}", basename($url));
         }
         $zip->close();

@@ -11,6 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Process\Process;
 use App\Entity\Shooting;
 
@@ -23,11 +24,13 @@ class ZipImageCommand extends Command
 {
     private $shootingRepository;
     private $zippingService;
+    private $appKernel;
 
-    public function __construct(ShootingRepository $shootingRepository, ZippingService $zippingService)
+    public function __construct(ShootingRepository $shootingRepository, ZippingService $zippingService, KernelInterface $appKernel)
     {
         $this->shootingRepository = $shootingRepository;
         $this->zippingService = $zippingService;
+        $this->appKernel = $appKernel;
         parent::__construct();
     }
 
@@ -58,8 +61,8 @@ class ZipImageCommand extends Command
 
         $shootings = $this->shootingRepository->findBy(["zip" => false]);
 
-        $dest = $_ENV["URL_PUBLIC"] . "/" ."images";
-        $destZip = $_ENV["URL_PUBLIC"] . "/" ."zip";
+        $dest = $this->appKernel->getProjectDir() . "/" . "public" . "/" . "images";
+        $destZip = $this->appKernel->getProjectDir() . "/" . "public" . "/" ."zip";
         $process = Process::fromShellCommandline("mkdir -p {$dest}", timeout: null);
         $process->mustRun(null);
         $process = Process::fromShellCommandline("mkdir -p {$destZip}", timeout: null);

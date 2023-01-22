@@ -59,7 +59,7 @@ class DSLRController extends AbstractController
             $printFilename = array_pop($arr);
             $printFilenameWithoutExtension = substr($printFilename, 0, strrpos($printFilename, "."));
             $arrPrintFilename = explode("_", $printFilenameWithoutExtension);
-            $code = $arrPrintFilename[1] + $arrPrintFilename[2];
+            $code = $arrPrintFilename[1] . $arrPrintFilename[2];
 
             $shooting->setPrintFilename($printFilename);
             $shooting->setCode($code);

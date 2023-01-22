@@ -48,18 +48,21 @@ class DSLRController extends AbstractController
                     break;
                 }
             }
-            foreach ($paths as $key => $value)
-            {
-                $paths[$key] = basename($value);
-                $logger->alert($paths[$key]);
-            }
+
             $folder = $arr[$good_key];
             $shooting = new Shooting();
             $shooting->setSingleFilenames($paths);
             $shooting->setFolder($folder);
-            $shooting->setCode(null);
+
             $shooting->setDate(new \DateTime());
-            $shooting->setPrintFilename(array_pop($arr));
+
+            $printFilename = array_pop($arr);
+            $printFilenameWithoutExtension = substr($printFilename, 0, strrpos($printFilename, "."));
+            $arrPrintFilename = explode("_", $printFilenameWithoutExtension);
+            $code = $arrPrintFilename[1] + $arrPrintFilename[2];
+
+            $shooting->setPrintFilename($printFilename);
+            $shooting->setCode($code);
             $shooting->setZip(false);
             $entityManager->persist($shooting);
             $entityManager->flush();

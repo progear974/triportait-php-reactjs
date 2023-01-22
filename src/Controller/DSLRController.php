@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\HeaderUtils;
@@ -70,11 +71,11 @@ class DSLRController extends AbstractController
     }
 
     #[Route('/download/{filename}', name: 'download_filename')]
-    public function download($filename)
+    public function download(KernelInterface $appKernel, $filename)
     {
         $extension = pathinfo($filename, PATHINFO_EXTENSION);
-        $zip_folder_path = $_ENV["DATA_ROOT_FOLDER"] . "/" . $_ENV["FOLDER_ZIP"];
-        $singles_folder_path = $_ENV["DATA_ROOT_FOLDER"] . "/" . $_ENV["FOLDER_SINGLES"];
+        $zip_folder_path = $appKernel->getProjectDir() . "/" . "public" . "/" . $_ENV["FOLDER_ZIP"];
+        $singles_folder_path = $appKernel->getProjectDir() . "/" . "public" . "/" . "images";
 
         if ($extension == "zip") {
             $response = new BinaryFileResponse($zip_folder_path . "/" . $filename);

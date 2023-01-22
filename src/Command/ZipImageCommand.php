@@ -82,6 +82,7 @@ class ZipImageCommand extends Command
             $process->mustRun(null);
             $process = Process::fromShellCommandline("cp -r ${pathSinglesFolderToCopy} ${dest}", timeout: null);
             $process->mustRun(null);
+            $this->zippingService->zipSession($shooting->getCode());
         }
         return Command::SUCCESS;
     }

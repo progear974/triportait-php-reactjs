@@ -41,11 +41,11 @@ class ZipImageCommand extends Command
     private function checkFilesExists(Shooting $shooting): bool
     {
         $pathPrint = $_ENV["DATA_ROOT_FOLDER"] . "/" . $shooting->getFolder() . "/" . $_ENV["FOLDER_PRINTS"] . "/" . $shooting->getPrintFilename();
+        print_r($pathPrint);
         if (!file_exists($pathPrint))
             return false;
         $basePathSingles = $_ENV["DATA_ROOT_FOLDER"] . "/" . $shooting->getFolder() . "/" . $_ENV["FOLDER_SINGLES"] . "/";
         print_r($basePathSingles);
-        print_r($pathPrint);
         foreach ($shooting->getSingleFilenames() as $single) {
             $path = $basePathSingles . $single;
             if (!file_exists($path))

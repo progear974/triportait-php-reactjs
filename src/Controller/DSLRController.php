@@ -96,6 +96,8 @@ class DSLRController extends AbstractController
         $shooting = $shootingRepository->findOneBy([
             "code" => $code
         ]);
+        if ($shooting == null)
+            return $this->json([], 404);
         $arr_url = [];
         $arr_url[] = $_ENV["URL_PUBLIC"] . "/" . "images" . "/" .$_ENV["FOLDER_PRINTS"] . "/" . $shooting->getPrintFilename();
         foreach ($shooting->getSingleFilenames() as $filename) {

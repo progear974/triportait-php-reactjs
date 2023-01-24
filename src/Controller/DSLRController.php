@@ -121,4 +121,12 @@ class DSLRController extends AbstractController
         }
         return $this->json($arr);
     }
+
+    #[Route('/cgu', name: 'cgu')]
+    public function cgu(KernelInterface $appKernel): \Symfony\Component\HttpFoundation\Response
+    {
+        $path_cgu = $appKernel->getProjectDir() . "/var/files/cgu.txt";
+        $file_content = readfile($path_cgu);
+        return new Response($file_content);
+    }
 }

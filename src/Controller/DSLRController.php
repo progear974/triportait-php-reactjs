@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -123,7 +124,7 @@ class DSLRController extends AbstractController
     }
 
     #[Route('/cgu', name: 'cgu')]
-    public function cgu(KernelInterface $appKernel): \Symfony\Component\HttpFoundation\Response
+    public function cgu(KernelInterface $appKernel): Response
     {
         $path_cgu = $appKernel->getProjectDir() . "/var/files/cgu.txt";
         $file_content = readfile($path_cgu);

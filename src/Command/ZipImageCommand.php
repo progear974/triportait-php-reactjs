@@ -58,8 +58,8 @@ class ZipImageCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-
-        $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
+        $process = Process::fromShellCommandline(`umount {$this->appKernel->getProjectDir() . "../data"} && cd .. && dbxfs data`, timeout: null);
+        $process->mustRun(null);
 
         $shootings = $this->shootingRepository->findBy(["zip" => false]);
 

@@ -61,7 +61,7 @@ class ZipImageCommand extends Command
         $process = Process::fromShellCommandline("umount /home/ubuntu/data", timeout: null);
         $process->mustRun(null);
 
-        $process = Process::fromShellCommandline("dbxfs /home/ubuntu/data", timeout: null);
+        $process = Process::fromShellCommandline("./home/ubuntu/triportait-php-reactjs/dropbox", timeout: null);
         $process->mustRun(null);
 
         $shootings = $this->shootingRepository->findBy(["zip" => false]);

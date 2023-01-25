@@ -58,7 +58,7 @@ class ZipImageCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $process = Process::fromShellCommandline(`umount {$this->appKernel->getProjectDir() + "../data"} && cd .. && dbxfs data`, timeout: null);
+        $process = Process::fromShellCommandline("umount /home/ubuntu/triportait-php-reactjs && cd .. && dbxfs data", timeout: null);
         $process->mustRun(null);
 
         $shootings = $this->shootingRepository->findBy(["zip" => false]);

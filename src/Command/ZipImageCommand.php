@@ -58,11 +58,11 @@ class ZipImageCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $process = Process::fromShellCommandline("umount /home/ubuntu/data", timeout: null);
-        $process->mustRun(null);
+        //$process = Process::fromShellCommandline("umount /home/ubuntu/data", timeout: null);
+        //$process->mustRun(null);
 
-        $process = Process::fromShellCommandline("./home/ubuntu/triportait-php-reactjs/dropbox", timeout: null);
-        $process->mustRun(null);
+        //$process = Process::fromShellCommandline("/home/ubuntu/triportait-php-reactjs/bin/dropbox", timeout: null);
+        //$process->mustRun(null);
 
         $shootings = $this->shootingRepository->findBy(["zip" => false]);
 

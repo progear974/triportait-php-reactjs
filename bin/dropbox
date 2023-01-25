@@ -1,4 +1,4 @@
 #!/usr/bin/sh
 
-dbxfs /home/ubuntu/data;
+/home/ubuntu/.local/bin/dbxfs /home/ubuntu/data;
 

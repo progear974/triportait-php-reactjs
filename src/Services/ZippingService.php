@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repository\ShootingRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use ZipArchive;
 
@@ -19,7 +20,7 @@ class ZippingService
         $this->shootingRepository = $shootingRepository;
     }
 
-    public function zipSession($code)
+    public function zipSession($code, EntityManagerInterface $entityManager)
     {
         if ($code == null)
             return;
@@ -39,6 +40,8 @@ class ZippingService
         }
         $zip->close();
         $shooting->setZip(true);
+        $entityManager->persist($shooting);
+        $entityManager->flush();
     }
 
 }

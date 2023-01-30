@@ -14,13 +14,16 @@ class ZippingService
 
     private ShootingRepository $shootingRepository;
 
-    public function __construct(KernelInterface $appKernel, ShootingRepository $shootingRepository)
+    private EntityManagerInterface $entityManager;
+
+    public function __construct(KernelInterface $appKernel, ShootingRepository $shootingRepository,  EntityManagerInterface $entityManager)
     {
         $this->appKernel = $appKernel;
         $this->shootingRepository = $shootingRepository;
+        $this->entityManager = $entityManager;
     }
 
-    public function zipSession($code, EntityManagerInterface $entityManager)
+    public function zipSession($code)
     {
         if ($code == null)
             return;
@@ -40,8 +43,8 @@ class ZippingService
         }
         $zip->close();
         $shooting->setZip(true);
-        $entityManager->persist($shooting);
-        $entityManager->flush();
+        $this->entityManager->persist($shooting);
+        $this->entityManager->flush();
     }
 
 }

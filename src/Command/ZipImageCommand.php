@@ -58,12 +58,6 @@ class ZipImageCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        //$process = Process::fromShellCommandline("umount /home/ubuntu/data", timeout: null);
-        //$process->mustRun(null);
-
-        //$process = Process::fromShellCommandline("/home/ubuntu/triportait-php-reactjs/bin/dropbox", timeout: null);
-        //$process->mustRun(null);
-
         $shootings = $this->shootingRepository->findBy(["zip" => false]);
 
         $dest = $this->appKernel->getProjectDir() . "/" . "public" . "/" . "images";
@@ -75,16 +69,22 @@ class ZipImageCommand extends Command
 
         foreach ($shootings as $shooting) {
             if (!$this->checkFilesExists($shooting)) {
-                print_r("Pas toutes les photos télécharger !\n");
                 continue;
             }
             $pathPrintFolderToCopy = $_ENV["DATA_ROOT_FOLDER"] . "/" . $shooting->getFolder() . "/" . $_ENV["FOLDER_PRINTS"];
             $pathSinglesFolderToCopy = $_ENV["DATA_ROOT_FOLDER"] . "/" . $shooting->getFolder() . "/" . $_ENV["FOLDER_SINGLES"];
             print_r($pathSinglesFolderToCopy);
-            $process = Process::fromShellCommandline("cp -r ${pathPrintFolderToCopy} ${dest}", timeout: null);
+
+            $print_filename = $shooting->getPrintFilename();
+            $process = Process::fromShellCommandline("cp ${pathPrintFolderToCopy}/${print_filename} ${dest}", timeout: null);
             $process->mustRun(null);
-            $process = Process::fromShellCommandline("cp -r ${pathSinglesFolderToCopy} ${dest}", timeout: null);
-            $process->mustRun(null);
+
+            $singles_filenames = $shooting->getSingleFilenames();
+            foreach ($singles_filenames as $singles_filename) {
+                print_r("${pathSinglesFolderToCopy}/${singles_filename}");
+                $process = Process::fromShellCommandline("cp ${pathSinglesFolderToCopy}/${singles_filename} ${dest}", timeout: null);
+                $process->mustRun(null);
+            }
             $this->zippingService->zipSession($shooting->getCode());
         }
         return Command::SUCCESS;

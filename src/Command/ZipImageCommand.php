@@ -81,7 +81,8 @@ class ZipImageCommand extends Command
 
             $singles_filenames = $shooting->getSingleFilenames();
             foreach ($singles_filenames as $singles_filename) {
-                print_r("${pathSinglesFolderToCopy}/${singles_filename}\n");
+                print_r("${pathSinglesFolderToCopy}/${singles_filename}");
+                echo "\n\n";
                 $process = Process::fromShellCommandline("cp ${pathSinglesFolderToCopy}/${singles_filename} ${dest}", timeout: null);
                 $process->mustRun(null);
             }

@@ -41,11 +41,9 @@ class ZipImageCommand extends Command
     private function checkFilesExists(Shooting $shooting): bool
     {
         $pathPrint = $_ENV["DATA_ROOT_FOLDER"] . "/" . $shooting->getFolder() . "/" . $_ENV["FOLDER_PRINTS"] . "/" . $shooting->getPrintFilename();
-        print_r($pathPrint);
         if (!file_exists($pathPrint))
             return false;
         $basePathSingles = $_ENV["DATA_ROOT_FOLDER"] . "/" . $shooting->getFolder() . "/" . $_ENV["FOLDER_SINGLES"] . "/";
-        print_r($basePathSingles);
         foreach ($shooting->getSingleFilenames() as $single) {
             $path = $basePathSingles . $single;
             if (!file_exists($path))
@@ -80,9 +78,6 @@ class ZipImageCommand extends Command
 
             $singles_filenames = $shooting->getSingleFilenames();
             foreach ($singles_filenames as $singles_filename) {
-                echo "OKOKKO\n";
-                print_r("${pathSinglesFolderToCopy}/${singles_filename}");
-                echo "\n\n";
                 $process = Process::fromShellCommandline("cp ${pathSinglesFolderToCopy}/${singles_filename} ${dest}", timeout: null);
                 $process->mustRun(null);
             }

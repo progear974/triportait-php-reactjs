@@ -73,7 +73,6 @@ class ZipImageCommand extends Command
             }
             $pathPrintFolderToCopy = $_ENV["DATA_ROOT_FOLDER"] . "/" . $shooting->getFolder() . "/" . $_ENV["FOLDER_PRINTS"];
             $pathSinglesFolderToCopy = $_ENV["DATA_ROOT_FOLDER"] . "/" . $shooting->getFolder() . "/" . $_ENV["FOLDER_SINGLES"];
-            print_r($pathSinglesFolderToCopy);
 
             $print_filename = $shooting->getPrintFilename();
             $process = Process::fromShellCommandline("cp ${pathPrintFolderToCopy}/${print_filename} ${dest}", timeout: null);

@@ -24,6 +24,8 @@ class ZippingService
         if ($code == null)
             return;
         $shooting = $this->shootingRepository->findOneBy(["code" => $code, "zip" => false]);
+        if (!$shooting)
+            return;
         $arr_url = [];
         $arr_url[] = $_ENV["DATA_ROOT_FOLDER"] . "/" . $shooting->getFolder() . "/" . $_ENV["FOLDER_PRINTS"] . "/" . $shooting->getPrintFilename();
         foreach ($shooting->getSingleFilenames() as $filename) {

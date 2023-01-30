@@ -23,7 +23,7 @@ class ZippingService
     {
         if ($code == null)
             return;
-        $shooting = $this->shootingRepository->findOneBy(["code" => $code]);
+        $shooting = $this->shootingRepository->findOneBy(["code" => $code, "zip" => false]);
         $arr_url = [];
         $arr_url[] = $_ENV["DATA_ROOT_FOLDER"] . "/" . $shooting->getFolder() . "/" . $_ENV["FOLDER_PRINTS"] . "/" . $shooting->getPrintFilename();
         foreach ($shooting->getSingleFilenames() as $filename) {
@@ -33,10 +33,10 @@ class ZippingService
         $zip = new ZipArchive();
         $zip->open($this->appKernel->getProjectDir() . "/" . "public" . "/" . "zip" . "/" . $code . ".zip",  ZipArchive::CREATE);
         foreach ($arr_url as $url) {
-            print_r($url);
             $zip->addFile("{$url}", basename($url));
         }
         $zip->close();
+        $shooting->setZip(true);
     }
 
 }

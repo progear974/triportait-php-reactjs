@@ -39,20 +39,22 @@ class ShootingRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Shooting[] Returns an array of Shooting objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('s')
-//            ->andWhere('s.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('s.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * @return Shooting[] Returns an array of Shooting objects
+     */
+    public function findByOlderThanDay(string $day): array
+    {
+        $now = new \DateTime();
+
+        $now->modify("-". $day . " day");
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.date < :deadline')
+            ->setParameter('deadline', $now)
+            ->orderBy('s.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 
 //    public function findOneBySomeField($value): ?Shooting
 //    {

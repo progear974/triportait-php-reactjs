@@ -3,7 +3,7 @@
 namespace App\Command;
 
 use App\Repository\ShootingRepository;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -24,7 +24,7 @@ class DeleteOldPhotosCommand extends Command
     private $appKernel;
     private $entityManager;
 
-    public function __construct(ShootingRepository $shootingRepository, KernelInterface $appKernel, EntityManager $entityManager)
+    public function __construct(ShootingRepository $shootingRepository, KernelInterface $appKernel, EntityManagerInterface $entityManager)
     {
         parent::__construct();
         $this->shootingRepository = $shootingRepository;
@@ -44,21 +44,21 @@ class DeleteOldPhotosCommand extends Command
 
             // delete print file in data and public folder
             $print_filename = $shooting->getPrintFilename();
-            $process = Process::fromShellCommandline("rm ${pathPrintFolderToCopy}/${print_filename}", timeout: null);
+            $process = Process::fromShellCommandline("rm {$pathPrintFolderToCopy}/{$print_filename}", timeout: null);
             $process->mustRun(null);
-            $process = Process::fromShellCommandline("rm ${dest_images}/${print_filename}", timeout: null);
+            $process = Process::fromShellCommandline("rm {$dest_images}/{$print_filename}", timeout: null);
             $process->mustRun(null);
 
             // delete singles files in data and public folder
             $singles_filename = $shooting->getSingleFilenames();
             foreach ($singles_filename as $single_filename) {
-                $process = Process::fromShellCommandline("rm ${pathSinglesFolderToCopy}/${single_filename}", timeout: null);
+                $process = Process::fromShellCommandline("rm {$pathSinglesFolderToCopy}/{$single_filename}", timeout: null);
                 $process->mustRun(null);
-                $process = Process::fromShellCommandline("rm ${dest_images}/${single_filename}", timeout: null);
+                $process = Process::fromShellCommandline("rm {$dest_images}/{$single_filename}", timeout: null);
                 $process->mustRun(null);
             }
             $zip_filename = str_replace(".jpg", ".zip", $print_filename);
-            $process = Process::fromShellCommandline("rm ${dest_zip}/${zip_filename}", timeout: null);
+            $process = Process::fromShellCommandline("rm {$dest_zip}/{$zip_filename}", timeout: null);
             $process->mustRun(null);
             $this->entityManager->remove($shooting);
             $this->entityManager->flush();

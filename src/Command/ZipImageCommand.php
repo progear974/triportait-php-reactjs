@@ -44,7 +44,7 @@ class ZipImageCommand extends Command
 
     private function checkFilesExists(Shooting $shooting): bool
     {
-        $pathPrint = $this->triportraitTreeService->getSinglePathInDataFolder($shooting->getFolder(), $shooting->getPrintFilename());
+        $pathPrint = $this->triportraitTreeService->getPrintPathInDataFolder($shooting->getFolder(), $shooting->getPrintFilename());
         if (!file_exists($pathPrint))
             return false;
         foreach ($shooting->getSingleFilenames() as $single) {

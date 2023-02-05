@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Repository\ShootingRepository;
+use App\Services\TriportraitTreeService;
 use App\Services\ZippingService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -25,12 +26,14 @@ class ZipImageCommand extends Command
     private $shootingRepository;
     private $zippingService;
     private $appKernel;
+    private $triportraitTreeService;
 
-    public function __construct(ShootingRepository $shootingRepository, ZippingService $zippingService, KernelInterface $appKernel)
+    public function __construct(ShootingRepository $shootingRepository, ZippingService $zippingService, KernelInterface $appKernel, TriportraitTreeService $triportraitTreeService)
     {
         $this->shootingRepository = $shootingRepository;
         $this->zippingService = $zippingService;
         $this->appKernel = $appKernel;
+        $this->triportraitTreeService = $triportraitTreeService;
         parent::__construct();
     }
 
@@ -40,13 +43,11 @@ class ZipImageCommand extends Command
 
     private function checkFilesExists(Shooting $shooting): bool
     {
-        $pathPrint = $_ENV["DATA_ROOT_FOLDER"] . "/" . $shooting->getFolder() . "/" . $_ENV["FOLDER_PRINTS"] . "/" . $shooting->getPrintFilename();
+        $pathPrint = $this->triportraitTreeService->getSinglePathInDataFolder($shooting->getFolder(), $shooting->getPrintFilename());
         if (!file_exists($pathPrint))
             return false;
-        $basePathSingles = $_ENV["DATA_ROOT_FOLDER"] . "/" . $shooting->getFolder() . "/" . $_ENV["FOLDER_SINGLES"] . "/";
         foreach ($shooting->getSingleFilenames() as $single) {
-            $path = $basePathSingles . $single;
-            if (!file_exists($path))
+            if (!file_exists($this->triportraitTreeService->getSinglePathInDataFolder($shooting->getFolder(), $single)))
                 return false;
         }
         return true;
@@ -58,29 +59,21 @@ class ZipImageCommand extends Command
 
         $shootings = $this->shootingRepository->findBy(["zip" => false]);
 
-        $dest = $this->appKernel->getProjectDir() . "/" . "public" . "/" . "images";
-        $destZip = $this->appKernel->getProjectDir() . "/" . "public" . "/" ."zip";
-        $process = Process::fromShellCommandline("mkdir -p {$dest}", timeout: null);
+        $process = Process::fromShellCommandline("mkdir -p {$this->triportraitTreeService->getPublicImagesFolderPath()}", timeout: null);
         $process->mustRun(null);
-        $process = Process::fromShellCommandline("mkdir -p {$destZip}", timeout: null);
+        $process = Process::fromShellCommandline("mkdir -p {$this->triportraitTreeService->getPublicZipFolderPath()}", timeout: null);
         $process->mustRun(null);
 
         foreach ($shootings as $shooting) {
             if (!$this->checkFilesExists($shooting)) {
                 continue;
             }
-            $pathPrintFolderToCopy = $_ENV["DATA_ROOT_FOLDER"] . "/" . $shooting->getFolder() . "/" . $_ENV["FOLDER_PRINTS"];
-            $pathSinglesFolderToCopy = $_ENV["DATA_ROOT_FOLDER"] . "/" . $shooting->getFolder() . "/" . $_ENV["FOLDER_SINGLES"];
-
-            $print_filename = $shooting->getPrintFilename();
-            $process = Process::fromShellCommandline("cp ${pathPrintFolderToCopy}/${print_filename} ${dest}", timeout: null);
+            $process = Process::fromShellCommandline("cp {$this->triportraitTreeService->getPrintPathInDataFolder($shooting->getFolder(), $shooting->getPrintFilename())} {$this->triportraitTreeService->getPublicImagesFolderPath()}", timeout: null);
             $process->mustRun(null);
 
-            $singles_filenames = $shooting->getSingleFilenames();
-            foreach ($singles_filenames as $singles_filename) {
-                print_r("${pathSinglesFolderToCopy}/${singles_filename}");
-                echo "\n\n";
-                $process = Process::fromShellCommandline("cp ${pathSinglesFolderToCopy}/${singles_filename} ${dest}", timeout: null);
+            $singles_filenames = $this->triportraitTreeService->getSinglesPathInDataFolder($shooting->getFolder(), $shooting->getSingleFilenames());
+            foreach ($singles_filenames as $single_path) {
+                $process = Process::fromShellCommandline("cp {$single_path} {$this->triportraitTreeService->getPublicImagesFolderPath()}", timeout: null);
                 $process->mustRun(null);
             }
             $this->zippingService->zipSession($shooting->getCode());

@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Repository\ShootingRepository;
+use App\Services\TriportraitTreeService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -23,47 +24,43 @@ class DeleteOldPhotosCommand extends Command
     private $shootingRepository;
     private $appKernel;
     private $entityManager;
+    private $triportraitTreeService;
 
-    public function __construct(ShootingRepository $shootingRepository, KernelInterface $appKernel, EntityManagerInterface $entityManager)
+    public function __construct(ShootingRepository $shootingRepository, KernelInterface $appKernel, EntityManagerInterface $entityManager, TriportraitTreeService $triportraitTreeService)
     {
         parent::__construct();
         $this->shootingRepository = $shootingRepository;
         $this->appKernel = $appKernel;
         $this->entityManager = $entityManager;
+        $this->triportraitTreeService = $triportraitTreeService;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $shootings = $this->shootingRepository->findByOlderThanDay("31");
-        $dest_images = $this->appKernel->getProjectDir() . "/" . "public" . "/" . "images";
-        $dest_zip = $this->appKernel->getProjectDir() . "/" . "public" . "/" . "zip";
         foreach ($shootings as $shooting) {
-            print_r($shooting);
-            $pathPrintFolderToCopy = $_ENV["DATA_ROOT_FOLDER"] . "/" . $shooting->getFolder() . "/" . $_ENV["FOLDER_PRINTS"];
-            $pathSinglesFolderToCopy = $_ENV["DATA_ROOT_FOLDER"] . "/" . $shooting->getFolder() . "/" . $_ENV["FOLDER_SINGLES"];
-
+            $delete_paths = [];
             // delete print file in data and public folder
-            $print_filename = $shooting->getPrintFilename();
-            $process = Process::fromShellCommandline("rm {$pathPrintFolderToCopy}/{$print_filename}", timeout: null);
-            $process->mustRun(null);
-            $process = Process::fromShellCommandline("rm {$dest_images}/{$print_filename}", timeout: null);
-            $process->mustRun(null);
+            $delete_paths[] = $this->triportraitTreeService->getPrintPathInDataFolder($shooting->getFolder(), $shooting->getPrintFilename());
+            $delete_paths[] = $this->triportraitTreeService->getPrintPathInPublicFolder($shooting->getPrintFilename());
+            // delete print file in data and public folder
 
             // delete singles files in data and public folder
-            $singles_filename = $shooting->getSingleFilenames();
-            foreach ($singles_filename as $single_filename) {
-                $process = Process::fromShellCommandline("rm {$pathSinglesFolderToCopy}/{$single_filename}", timeout: null);
-                $process->mustRun(null);
-                $process = Process::fromShellCommandline("rm {$dest_images}/{$single_filename}", timeout: null);
-                $process->mustRun(null);
-            }
-            $zip_filename = str_replace(".jpg", ".zip", $print_filename);
-            $process = Process::fromShellCommandline("rm {$dest_zip}/{$zip_filename}", timeout: null);
+            $delete_paths = array_merge($delete_paths, $this->triportraitTreeService->getSinglesPathInDataFolder($shooting->getFolder(), $shooting->getSingleFilenames()));
+            $delete_paths = array_merge($delete_paths, $this->triportraitTreeService->getSinglesPathInPublicFolder($shooting->getSingleFilenames()));
+            // delete singles files in data and public folder
+
+            // delete zip file in zip folder
+            $delete_paths[] = str_replace(".jpg", ".zip", $shooting->getPrintFilename());
+            // delete zip file in zip folder
+
+            $file_to_delete = implode(" ", $delete_paths);
+            print_r($delete_paths);
+            $process = Process::fromShellCommandline("rm -f {$file_to_delete}", timeout: null);
             $process->mustRun(null);
             $this->entityManager->remove($shooting);
             $this->entityManager->flush();
         }
-
         return Command::SUCCESS;
     }
 }

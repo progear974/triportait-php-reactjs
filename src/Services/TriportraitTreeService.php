@@ -14,14 +14,24 @@ class TriportraitTreeService
         $this->appKernel = $appKernel;
     }
 
+    public function getPublicImagesFolderPath()
+    {
+        return "{$this->appKernel->getProjectDir()}/public/images";
+    }
+
+    public function getPublicZipFolderPath()
+    {
+        return "{$this->appKernel->getProjectDir()}/public/zip";
+    }
+
     public function getPrintPathInPublicFolder($printFilename) : string
     {
-        return "{$this->appKernel->getProjectDir()}/public/images/Prints/{$printFilename}";
+        return "{$this->getPublicImagesFolderPath()}/Prints/{$printFilename}";
     }
 
     public function getSinglePathInPublicFolder($singleFilename) : string
     {
-        return "{$this->appKernel->getProjectDir()}/public/images/Singles/{$singleFilename}";
+        return "{$this->getPublicImagesFolderPath()}/Singles/{$singleFilename}";
     }
 
     public function getSinglesPathInPublicFolder($singlesFilename) : array
@@ -43,11 +53,11 @@ class TriportraitTreeService
         return "{$_ENV["DATA_ROOT_FOLDER"]}/{$folder}/{$_ENV["FOLDER_SINGLES"]}/{$single_filename}";
     }
 
-    public function getSinglesPathInDataFolder($singlesFilename) : array
+    public function getSinglesPathInDataFolder($folder, $singlesFilename) : array
     {
         $arr = [];
         foreach ($singlesFilename as $singleFilename) {
-            $arr[] = $this->getSinglePathInDataFolder($singleFilename);
+            $arr[] = $this->getSinglePathInDataFolder($folder, $singleFilename);
         }
         return $arr;
     }

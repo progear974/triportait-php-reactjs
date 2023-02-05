@@ -16,11 +16,14 @@ class ZippingService
 
     private EntityManagerInterface $entityManager;
 
-    public function __construct(KernelInterface $appKernel, ShootingRepository $shootingRepository,  EntityManagerInterface $entityManager)
+    private TriportraitTreeService $triportraitTreeService;
+
+    public function __construct(KernelInterface $appKernel, ShootingRepository $shootingRepository,  EntityManagerInterface $entityManager, TriportraitTreeService $triportraitTreeService)
     {
         $this->appKernel = $appKernel;
         $this->shootingRepository = $shootingRepository;
         $this->entityManager = $entityManager;
+        $this->triportraitTreeService = $triportraitTreeService;
     }
 
     public function zipSession($code)
@@ -31,13 +34,13 @@ class ZippingService
         if (!$shooting)
             return;
         $arr_url = [];
-        $arr_url[] = $_ENV["DATA_ROOT_FOLDER"] . "/" . $shooting->getFolder() . "/" . $_ENV["FOLDER_PRINTS"] . "/" . $shooting->getPrintFilename();
+        $arr_url[] = $this->triportraitTreeService->getPrintPathInDataFolder($shooting->getFolder(), $shooting->getPrintFilename());
         foreach ($shooting->getSingleFilenames() as $filename) {
-            $arr_url[] = $_ENV["DATA_ROOT_FOLDER"] . "/" . $shooting->getFolder() . "/" . $_ENV["FOLDER_SINGLES"] . "/" . $filename;
+            $arr_url[] = $this->triportraitTreeService->getSinglePathInDataFolder($shooting->getFolder(), $filename);
         }
 
         $zip = new ZipArchive();
-        $zip->open($this->appKernel->getProjectDir() . "/" . "public" . "/" . "zip" . "/" . $code . ".zip",  ZipArchive::CREATE);
+        $zip->open($this->triportraitTreeService->getPublicZipFolderPath() . "/" . $code . ".zip",  ZipArchive::CREATE);
         foreach ($arr_url as $url) {
             $zip->addFile("{$url}", basename($url));
         }

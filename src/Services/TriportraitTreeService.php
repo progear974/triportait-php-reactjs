@@ -29,6 +29,11 @@ class TriportraitTreeService
         return "{$this->appKernel->getProjectDir()}/public/zip";
     }
 
+    public function getZipPathInPublicFolder($filename)
+    {
+        return "{$this->getPublicZipFolderPath()}/{$filename}";
+    }
+
     public function getImagePathInPublicFolder($filename) : string
     {
         return "{$this->getPublicImagesFolderPath()}/{$filename}";

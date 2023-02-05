@@ -88,6 +88,7 @@ class ZipImageCommand extends Command
         foreach ($shootings as $shooting) {
             try {
                 if (!$this->checkFilesExists($shooting)) {
+                    print_r("Un des fichiers de {$shooting->getCode()} n'est pas upload !");
                     continue;
                 }
                 $process = Process::fromShellCommandline("cp {$this->triportraitTreeService->getPrintPathInDataFolder($shooting->getFolder(), $shooting->getPrintFilename())} {$this->triportraitTreeService->getPublicImagesFolderPath()}", timeout: null);

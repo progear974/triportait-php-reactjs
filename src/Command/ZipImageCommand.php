@@ -5,6 +5,7 @@ namespace App\Command;
 use App\Repository\ShootingRepository;
 use App\Services\TriportraitTreeService;
 use App\Services\ZippingService;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -53,6 +54,26 @@ class ZipImageCommand extends Command
         return true;
     }
 
+    private function deleteFilesShooting(Shooting $shooting)
+    {
+        $delete_paths = [];
+        // delete print file in public folder
+        $delete_paths[] = $this->triportraitTreeService->getImagePathInPublicFolder($shooting->getPrintFilename());
+        // delete print file in public folder
+
+        // delete singles files in public folder
+        $delete_paths = array_merge($delete_paths, $this->triportraitTreeService->getImagesPathInPublicFolder($shooting->getSingleFilenames()));
+        // delete singles files in public folder
+
+        // delete zip file in zip folder
+        $delete_paths[] = $this->triportraitTreeService->getZipPathInPublicFolder(str_replace(".jpg", ".zip", $shooting->getPrintFilename()));
+        // delete zip file in zip folder
+
+        $file_to_delete = implode(" ", $delete_paths);
+        $process = Process::fromShellCommandline("rm -f {$file_to_delete}", timeout: null);
+        $process->mustRun(null);
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -65,17 +86,22 @@ class ZipImageCommand extends Command
         $process->mustRun(null);
 
         foreach ($shootings as $shooting) {
-            if (!$this->checkFilesExists($shooting)) {
-                continue;
+            try {
+                if (!$this->checkFilesExists($shooting)) {
+                    continue;
+                }
+                $process = Process::fromShellCommandline("cp {$this->triportraitTreeService->getPrintPathInDataFolder($shooting->getFolder(), $shooting->getPrintFilename())} {$this->triportraitTreeService->getPublicImagesFolderPath()}", timeout: null);
+                $process->mustRun(null);
+                $singles_filenames = $this->triportraitTreeService->getSinglesPathInDataFolder($shooting->getFolder(), $shooting->getSingleFilenames());
+                $singles_to_copy = implode(" ", $singles_filenames);
+                $process = Process::fromShellCommandline("cp {$singles_to_copy} {$this->triportraitTreeService->getPublicImagesFolderPath()}", timeout: null);
+                $process->mustRun(null);
+                $this->zippingService->zipSession($shooting->getCode());
+            } catch (Exception $exception) {
+                $this->deleteFilesShooting($shooting);
+                $shooting->setZip(false);
+                $this->shootingRepository->save($shooting, true);
             }
-            $process = Process::fromShellCommandline("cp {$this->triportraitTreeService->getPrintPathInDataFolder($shooting->getFolder(), $shooting->getPrintFilename())} {$this->triportraitTreeService->getPublicImagesFolderPath()}", timeout: null);
-            $process->mustRun(null);
-
-            $singles_filenames = $this->triportraitTreeService->getSinglesPathInDataFolder($shooting->getFolder(), $shooting->getSingleFilenames());
-            $singles_to_copy = implode(" ", $singles_filenames);
-            $process = Process::fromShellCommandline("cp {$singles_to_copy} {$this->triportraitTreeService->getPublicImagesFolderPath()}", timeout: null);
-            $process->mustRun(null);
-            $this->zippingService->zipSession($shooting->getCode());
         }
         return Command::SUCCESS;
     }

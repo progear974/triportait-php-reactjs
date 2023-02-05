@@ -38,7 +38,6 @@ class ZippingService
         foreach ($shooting->getSingleFilenames() as $filename) {
             $arr_url[] = $this->triportraitTreeService->getSinglePathInDataFolder($shooting->getFolder(), $filename);
         }
-
         $zip = new ZipArchive();
         $zip->open($this->triportraitTreeService->getPublicZipFolderPath() . "/" . $code . ".zip",  ZipArchive::CREATE);
         foreach ($arr_url as $url) {

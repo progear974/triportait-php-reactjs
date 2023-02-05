@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Shooting;
 use App\Repository\ShootingRepository;
+use App\Services\TriportraitTreeService;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -92,7 +93,7 @@ class DSLRController extends AbstractController
     }
 
     #[Route('/photos/{code}', name: 'link_photo')]
-    public function link_photo(ShootingRepository $shootingRepository, $code)
+    public function link_photo(ShootingRepository $shootingRepository, TriportraitTreeService $triportraitTreeService, $code)
     {
         $shooting = $shootingRepository->findOneBy([
             "code" => $code
@@ -100,9 +101,9 @@ class DSLRController extends AbstractController
         if ($shooting == null)
             return $this->json([], 404);
         $arr_url = [];
-        $arr_url[] = $_ENV["URL_PUBLIC"] . "/" . "images" . "/" .$_ENV["FOLDER_PRINTS"] . "/" . $shooting->getPrintFilename();
+        $arr_url[] = $triportraitTreeService->getURLImagePathInPublicFolder($shooting->getPrintFilename());
         foreach ($shooting->getSingleFilenames() as $filename) {
-            $arr_url[] = $_ENV["URL_PUBLIC"] . "/" . "images" . "/" .$_ENV["FOLDER_SINGLES"] . "/" . $filename;
+            $arr_url[] = $triportraitTreeService->getURLImagePathInPublicFolder($filename);
         }
         return $this->json(["code" => $code, "urls" => $arr_url, "date" => $shooting->getDate()]);
     }

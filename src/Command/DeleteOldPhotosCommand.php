@@ -42,12 +42,12 @@ class DeleteOldPhotosCommand extends Command
             $delete_paths = [];
             // delete print file in data and public folder
             $delete_paths[] = $this->triportraitTreeService->getPrintPathInDataFolder($shooting->getFolder(), $shooting->getPrintFilename());
-            $delete_paths[] = $this->triportraitTreeService->getPrintPathInPublicFolder($shooting->getPrintFilename());
+            $delete_paths[] = $this->triportraitTreeService->getImagePathInPublicFolder($shooting->getPrintFilename());
             // delete print file in data and public folder
 
             // delete singles files in data and public folder
             $delete_paths = array_merge($delete_paths, $this->triportraitTreeService->getSinglesPathInDataFolder($shooting->getFolder(), $shooting->getSingleFilenames()));
-            $delete_paths = array_merge($delete_paths, $this->triportraitTreeService->getSinglesPathInPublicFolder($shooting->getSingleFilenames()));
+            $delete_paths = array_merge($delete_paths, $this->triportraitTreeService->getImagesPathInPublicFolder($shooting->getSingleFilenames()));
             // delete singles files in data and public folder
 
             // delete zip file in zip folder

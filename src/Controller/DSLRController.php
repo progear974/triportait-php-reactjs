@@ -129,6 +129,6 @@ class DSLRController extends AbstractController
     {
         $path_cgu = $appKernel->getProjectDir() . "/var/files/cgu.html";
         $file_content = readfile($path_cgu);
-        return new Response($file_content);
+        return new Response();
     }
 }

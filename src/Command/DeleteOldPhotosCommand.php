@@ -51,7 +51,7 @@ class DeleteOldPhotosCommand extends Command
             // delete singles files in data and public folder
 
             // delete zip file in zip folder
-            $delete_paths[] = $this->triportraitTreeService->getZipPathInPublicFolder(str_replace(".jpg", ".zip", $shooting->getPrintFilename()));
+            $delete_paths[] = $this->triportraitTreeService->getZipPathInPublicFolder($shooting->getCode() . ".zip");
             // delete zip file in zip folder
 
 

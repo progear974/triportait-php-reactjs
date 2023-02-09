@@ -39,28 +39,7 @@ class DeleteOldPhotosCommand extends Command
     {
         $shootings = $this->shootingRepository->findByOlderThanDay("31");
         foreach ($shootings as $shooting) {
-            $delete_paths = [];
-            // delete print file in data and public folder
-            $delete_paths[] = $this->triportraitTreeService->getPrintPathInDataFolder($shooting->getFolder(), $shooting->getPrintFilename());
-            $delete_paths[] = $this->triportraitTreeService->getImagePathInPublicFolder($shooting->getPrintFilename());
-            // delete print file in data and public folder
-
-            // delete singles files in data and public folder
-            $delete_paths = array_merge($delete_paths, $this->triportraitTreeService->getSinglesPathInDataFolder($shooting->getFolder(), $shooting->getSingleFilenames()));
-            $delete_paths = array_merge($delete_paths, $this->triportraitTreeService->getImagesPathInPublicFolder($shooting->getSingleFilenames()));
-            // delete singles files in data and public folder
-
-            // delete zip file in zip folder
-            $delete_paths[] = $this->triportraitTreeService->getZipPathInPublicFolder($shooting->getCode() . ".zip");
-            // delete zip file in zip folder
-
-
-            $file_to_delete = implode(" ", $delete_paths);
-            print_r($delete_paths);
-            $process = Process::fromShellCommandline("rm -f {$file_to_delete}", timeout: null);
-            $process->mustRun(null);
-            $this->entityManager->remove($shooting);
-            $this->entityManager->flush();
+            $this->triportraitTreeService->deletePhotos($shooting);
         }
         return Command::SUCCESS;
     }

@@ -74,6 +74,20 @@ class ZipImageCommand extends Command
         $process->mustRun(null);
     }
 
+    private function resizeSingle($pathImage, $new_width=1748, $new_height=2402)
+    {
+        $img = imagecreatefromjpeg($pathImage);
+        if (!$img)
+            return;
+        $width_img = imagesx($img);
+        $height_img = imagesy($img);
+        $cropped_img = imagecrop($img, ['x' => ($width_img / 2) - ($new_width / 2), 'y' => ($height_img / 2) - ($new_height / 2), 'width' => $new_width, 'height' => $new_height]);
+        if ($cropped_img)
+            imagejpeg($cropped_img, $pathImage);
+        imagedestroy($img);
+        imagedestroy($cropped_img);
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -97,6 +111,7 @@ class ZipImageCommand extends Command
                 $singles_to_copy = implode(" ", $singles_filenames);
                 $process = Process::fromShellCommandline("cp {$singles_to_copy} {$this->triportraitTreeService->getPublicImagesFolderPath()}", timeout: null);
                 $process->mustRun(null);
+                array_map(array($this, 'resizeSingle'), $singles_filenames, array_fill(0, sizeof($singles_filenames), 1748), array_fill(0, sizeof($singles_filenames), 2402));
                 $this->zippingService->zipSession($shooting->getCode());
             } catch (Exception $exception) {
                 $this->deleteFilesShooting($shooting);

@@ -22,7 +22,7 @@
         "symfony/process": "6.2.*",
         "symfony/runtime": "6.2.*",
         "symfony/webpack-encore-bundle": "^1.16",
-        "symfony/yaml": "6.2.*",
+        "symfony/yaml": "6.2.*"
     },
     "config": {
         "allow-plugins": {

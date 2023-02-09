@@ -16,10 +16,9 @@ class TriportraitTreeService
 
     private $entityManager;
 
-    public function __construct(KernelInterface $appKernel, TriportraitTreeService $triportraitTreeService, EntityManagerInterface $entityManager)
+    public function __construct(KernelInterface $appKernel, EntityManagerInterface $entityManager)
     {
         $this->appKernel = $appKernel;
-        $this->triportraitTreeService = $triportraitTreeService;
         $this->entityManager = $entityManager;
     }
 
@@ -79,17 +78,17 @@ class TriportraitTreeService
     public function deletePhotos(Shooting $shooting) {
         $delete_paths = [];
         // delete print file in data and public folder
-        $delete_paths[] = $this->triportraitTreeService->getPrintPathInDataFolder($shooting->getFolder(), $shooting->getPrintFilename());
-        $delete_paths[] = $this->triportraitTreeService->getImagePathInPublicFolder($shooting->getPrintFilename());
+        $delete_paths[] = $this->getPrintPathInDataFolder($shooting->getFolder(), $shooting->getPrintFilename());
+        $delete_paths[] = $this->getImagePathInPublicFolder($shooting->getPrintFilename());
         // delete print file in data and public folder
 
         // delete singles files in data and public folder
-        $delete_paths = array_merge($delete_paths, $this->triportraitTreeService->getSinglesPathInDataFolder($shooting->getFolder(), $shooting->getSingleFilenames()));
-        $delete_paths = array_merge($delete_paths, $this->triportraitTreeService->getImagesPathInPublicFolder($shooting->getSingleFilenames()));
+        $delete_paths = array_merge($delete_paths, $this->getSinglesPathInDataFolder($shooting->getFolder(), $shooting->getSingleFilenames()));
+        $delete_paths = array_merge($delete_paths, $this->getImagesPathInPublicFolder($shooting->getSingleFilenames()));
         // delete singles files in data and public folder
 
         // delete zip file in zip folder
-        $delete_paths[] = $this->triportraitTreeService->getZipPathInPublicFolder($shooting->getCode() . ".zip");
+        $delete_paths[] = $this->getZipPathInPublicFolder($shooting->getCode() . ".zip");
         // delete zip file in zip folder
 
 

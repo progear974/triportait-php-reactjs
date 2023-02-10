@@ -111,7 +111,8 @@ class ZipImageCommand extends Command
                 $singles_to_copy = implode(" ", $singles_filenames);
                 $process = Process::fromShellCommandline("cp {$singles_to_copy} {$this->triportraitTreeService->getPublicImagesFolderPath()}", timeout: null);
                 $process->mustRun(null);
-                array_map(array($this, 'resizeSingle'), $singles_filenames, array_fill(0, sizeof($singles_filenames), 1748), array_fill(0, sizeof($singles_filenames), 2402));
+                $files_to_crop = array_map(fn($filename): string => $this->triportraitTreeService->getPublicImagesFolderPath()."/".basename($filename), $singles_filenames);
+                array_map(array($this, 'resizeSingle'), $files_to_crop, array_fill(0, sizeof($singles_filenames), 1748), array_fill(0, sizeof($singles_filenames), 2402));
                 $this->zippingService->zipSession($shooting->getCode());
             } catch (Exception $exception) {
                 $this->deleteFilesShooting($shooting);

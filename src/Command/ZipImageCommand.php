@@ -104,6 +104,7 @@ class ZipImageCommand extends Command
             if (!file_exists($pathSingle)) {
                 $newPathName = substr($pathSingle, 0, strlen($pathSingle) - strlen(strrchr($pathSingle, '.'))) . "_3600." . strrchr($pathSingle, '.');
                 if (file_exists($newPathName)) {
+                    print_r("New pathname : " . $newPathName . "\n");
                     $arr[] = basename($newPathName);
                     $this->shootingRepository->save($shooting);
                 } else

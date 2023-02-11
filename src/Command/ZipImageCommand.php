@@ -88,6 +88,33 @@ class ZipImageCommand extends Command
         imagedestroy($cropped_img);
     }
 
+    public function changeCameraNamed(Shooting $shooting)
+    {
+        $pathPrint = $this->triportraitTreeService->getPrintPathInDataFolder($shooting->getFolder(), $shooting->getPrintFilename());
+        if (!file_exists($pathPrint)) {
+            $newPathName = substr($pathPrint, 0, strlen($pathPrint) - strlen(strrchr($pathPrint, '.'))) . "_3600." . strrchr($pathPrint, '.');
+            if (file_exists($newPathName)) {
+                $shooting->setPrintFilename(basename($newPathName));
+                $this->shootingRepository->save($shooting);
+            }
+        }
+        $arr = [];
+        foreach ($shooting->getSingleFilenames() as $single) {
+            $pathSingle = $this->triportraitTreeService->getSinglePathInDataFolder($shooting->getFolder(), $single);
+            if (!file_exists($pathSingle)) {
+                $newPathName = substr($pathSingle, 0, strlen($pathSingle) - strlen(strrchr($pathSingle, '.'))) . "_3600." . strrchr($pathSingle, '.');
+                if (file_exists($newPathName)) {
+                    $arr[] = basename($newPathName);
+                    $this->shootingRepository->save($shooting);
+                } else
+                    $arr[] = $single;
+            } else
+                $arr[] = $single;
+        }
+        $shooting->setSingleFilenames($arr);
+        $this->shootingRepository->save($shooting, true);
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -101,6 +128,7 @@ class ZipImageCommand extends Command
 
         foreach ($shootings as $shooting) {
             try {
+                $this->changeCameraNamed($shooting);
                 if (!$this->checkFilesExists($shooting)) {
                     print_r("Un des fichiers de {$shooting->getCode()} n'est pas upload !");
                     continue;

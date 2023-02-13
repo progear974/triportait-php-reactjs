@@ -71,7 +71,7 @@ class DeletePhotoCommand extends Command
                 $io->error("{$code} hasn't been correctly delete.");
             }
         }
-        file_put_contents("{$this->appKernel->getProjectDir()}/var/files/result.txt", $result);
+        file_put_contents("{$this->appKernel->getProjectDir()}/var/files/result.txt", implode("\n", $result));
         return Command::SUCCESS;
     }
 }

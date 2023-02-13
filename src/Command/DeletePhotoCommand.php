@@ -13,6 +13,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Process\Process;
 
 #[AsCommand(
     name: 'app:delete-code',
@@ -50,6 +51,7 @@ class DeletePhotoCommand extends Command
         }
         $file = file_get_contents($pathFile);
         $codes = explode("\n", $file);
+        $isProblem = false;
         foreach ($codes as $code) {
             try {
                 $code = rtrim($code);
@@ -63,8 +65,13 @@ class DeletePhotoCommand extends Command
                 $this->triportraitTreeService->deletePhotos($shooting);
                 $io->success("{$code} has been correctly delete.");
             } catch (Exception $exception) {
+                $isProblem = true;
                 $io->error("{$code} hasn't been correctly delete.");
             }
+        }
+        if ($isProblem == false) {
+            $process = Process::fromShellCommandline("rm -f $pathFile", timeout: null);
+            $process->mustRun(null);
         }
         return Command::SUCCESS;
     }

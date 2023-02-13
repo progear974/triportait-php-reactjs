@@ -40,12 +40,12 @@ class DeletePhotoCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $filename = $input->getArgument('filename') != null ? $input->getArgument('filename') : "delete.txt";
 
-        $codes = explode("\n", file_get_contents($filename));
-
-        if ($codes == false) {
+        if (!file_exists($filename)) {
             $io->error("File $filename not found");
             return Command::FAILURE;
         }
+        $codes = explode("\n", file_get_contents($filename));
+
         foreach ($codes as $code) {
             try {
                 $shooting = $this->shootingRepository->findOneBy(["code" => $code]);

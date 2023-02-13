@@ -50,6 +50,8 @@ class DeletePhotoCommand extends Command
         foreach ($codes as $code) {
             try {
                 $code = rtrim($code);
+                if ($code == null)
+                    continue;
                 $io->info("CODE : ($code)");
                 $shooting = $this->shootingRepository->findOneBy(["code" => $code]);
                 if ($shooting == null) {

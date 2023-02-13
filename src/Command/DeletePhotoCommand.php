@@ -49,7 +49,7 @@ class DeletePhotoCommand extends Command
         print_r($codes);
         foreach ($codes as $code) {
             try {
-                $io->info("CODE : ($code)");
+                $io->info(`CODE : ({rtrim($code)})`);
                 $shooting = $this->shootingRepository->findOneBy(["code" => $code]);
                 if ($shooting == null) {
                     $io->info("{$code} not found in database");

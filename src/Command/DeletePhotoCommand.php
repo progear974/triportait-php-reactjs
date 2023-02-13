@@ -44,6 +44,7 @@ class DeletePhotoCommand extends Command
         $filename = $input->getArgument('filename') != null ? $input->getArgument('filename') : "delete.txt";
         $pathFile = "{$this->appKernel->getProjectDir()}/var/files/$filename";
 
+        print_r($pathFile);
         if (!file_exists($pathFile)) {
             $io->error("File $filename not found");
             return Command::FAILURE;

@@ -12,6 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 #[AsCommand(
     name: 'app:delete-code',
@@ -21,12 +22,14 @@ class DeletePhotoCommand extends Command
 {
     private ShootingRepository $shootingRepository;
     private TriportraitTreeService $triportraitTreeService;
+    private KernelInterface $appKernel;
 
-    public function __construct(ShootingRepository $shootingRepository, TriportraitTreeService $triportraitTreeService)
+    public function __construct(ShootingRepository $shootingRepository, TriportraitTreeService $triportraitTreeService, KernelInterface $appKernel)
     {
         parent::__construct();
         $this->shootingRepository = $shootingRepository;
         $this->triportraitTreeService = $triportraitTreeService;
+        $this->appKernel = $appKernel;
     }
 
     protected function configure(): void
@@ -39,20 +42,19 @@ class DeletePhotoCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $filename = $input->getArgument('filename') != null ? $input->getArgument('filename') : "delete.txt";
+        $pathFile = "{$this->appKernel->getProjectDir()}/var/files/$filename";
 
-        if (!file_exists($filename)) {
+        if (!file_exists($pathFile)) {
             $io->error("File $filename not found");
             return Command::FAILURE;
         }
-        $file = file_get_contents($filename);
+        $file = file_get_contents($pathFile);
         $codes = explode("\n", $file);
-        print_r($codes);
         foreach ($codes as $code) {
             try {
                 $code = rtrim($code);
                 if ($code == null)
                     continue;
-                $io->info("CODE : ($code)");
                 $shooting = $this->shootingRepository->findOneBy(["code" => $code]);
                 if ($shooting == null) {
                     $io->info("{$code} not found in database");

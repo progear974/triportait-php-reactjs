@@ -51,7 +51,7 @@ class DeletePhotoCommand extends Command
         }
         $file = file_get_contents($pathFile);
         $codes = explode("\n", $file);
-        $isProblem = false;
+        $result = [];
         foreach ($codes as $code) {
             try {
                 $code = rtrim($code);
@@ -59,19 +59,18 @@ class DeletePhotoCommand extends Command
                     continue;
                 $shooting = $this->shootingRepository->findOneBy(["code" => $code]);
                 if ($shooting == null) {
+                    $result[] = "[NOT FOUND] Le code $code n'existe pas en base de données.";
                     $io->info("{$code} not found in database");
                     continue;
                 }
                 $this->triportraitTreeService->deletePhotos($shooting);
+                $result[] = "[OK] Les photos liées au code $code ont bien été supprimés.";
                 $io->success("{$code} has been correctly delete.");
             } catch (Exception $exception) {
-                $isProblem = true;
+                $result[] = "[ERROR] Les photos liées au code $code n'ont pas pu être supprimés.";
                 $io->error("{$code} hasn't been correctly delete.");
             }
-        }
-        if ($isProblem == false) {
-            $process = Process::fromShellCommandline("rm -f $pathFile", timeout: null);
-            $process->mustRun(null);
+            file_put_contents("{$this->appKernel->getProjectDir()}/var/files/result.txt", $result);
         }
         return Command::SUCCESS;
     }

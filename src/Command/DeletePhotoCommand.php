@@ -45,7 +45,7 @@ class DeletePhotoCommand extends Command
             return Command::FAILURE;
         }
         $codes = explode("\n", file_get_contents($filename));
-
+        print_r($codes);
         foreach ($codes as $code) {
             try {
                 $shooting = $this->shootingRepository->findOneBy(["code" => $code]);

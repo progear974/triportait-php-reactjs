@@ -70,8 +70,8 @@ class DeletePhotoCommand extends Command
                 $result[] = "[ERROR] Les photos liées au code $code n'ont pas pu être supprimés.";
                 $io->error("{$code} hasn't been correctly delete.");
             }
-            file_put_contents("{$this->appKernel->getProjectDir()}/var/files/result.txt", $result);
         }
+        file_put_contents("{$this->appKernel->getProjectDir()}/var/files/result.txt", $result);
         return Command::SUCCESS;
     }
 }

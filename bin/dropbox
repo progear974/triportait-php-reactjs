@@ -1,3 +1,4 @@
 #!/usr/bin/bash
 
+umount /home/ubuntu/data;
 /home/ubuntu/.local/bin/dbxfs /home/ubuntu/data > /tmp/toto.txt;

@@ -23,15 +23,13 @@ class DeleteOldPhotosCommand extends Command
 {
     private $shootingRepository;
     private $appKernel;
-    private $entityManager;
     private $triportraitTreeService;
 
-    public function __construct(ShootingRepository $shootingRepository, KernelInterface $appKernel, EntityManagerInterface $entityManager, TriportraitTreeService $triportraitTreeService)
+    public function __construct(ShootingRepository $shootingRepository, KernelInterface $appKernel, TriportraitTreeService $triportraitTreeService)
     {
         parent::__construct();
         $this->shootingRepository = $shootingRepository;
         $this->appKernel = $appKernel;
-        $this->entityManager = $entityManager;
         $this->triportraitTreeService = $triportraitTreeService;
     }
 

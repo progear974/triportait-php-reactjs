@@ -44,7 +44,7 @@ class DeletePhotoCommand extends Command
             $io->error("File $filename not found");
             return Command::FAILURE;
         }
-        $codes = explode("\n", file_get_contents($filename));
+        $codes = explode("\n", file_get_contents($filename), -1);
         print_r($codes);
         foreach ($codes as $code) {
             try {

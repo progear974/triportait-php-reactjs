@@ -44,10 +44,12 @@ class DeletePhotoCommand extends Command
             $io->error("File $filename not found");
             return Command::FAILURE;
         }
-        $codes = explode("\n", file_get_contents($filename));
+        $file = file_get_contents($filename);
+        $codes = explode("\n", $file);
         print_r($codes);
         foreach ($codes as $code) {
             try {
+                $io->info("CODE : ($code)");
                 $shooting = $this->shootingRepository->findOneBy(["code" => $code]);
                 if ($shooting == null) {
                     $io->info("{$code} not found in database");

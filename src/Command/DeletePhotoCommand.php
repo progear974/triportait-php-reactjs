@@ -72,6 +72,8 @@ class DeletePhotoCommand extends Command
             }
         }
         file_put_contents("{$this->appKernel->getProjectDir()}/var/files/result.txt", implode("\n", $result));
+        $process = Process::fromShellCommandline("rm -f $pathFile", timeout: null);
+        $process->mustRun(null);
         return Command::SUCCESS;
     }
 }

@@ -49,6 +49,10 @@ class DeletePhotoCommand extends Command
         foreach ($codes as $code) {
             try {
                 $shooting = $this->shootingRepository->findOneBy(["code" => $code]);
+                if ($shooting == null) {
+                    $io->info("{$code} not found in database");
+                    continue;
+                }
                 $this->triportraitTreeService->deletePhotos($shooting);
                 $io->success("{$code} has been correctly delete.");
             } catch (Exception $exception) {

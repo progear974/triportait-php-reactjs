@@ -134,7 +134,7 @@ class ZipImageCommand extends Command
                     print_r("Un des fichiers de {$shooting->getCode()} n'est pas upload !");
                     continue;
                 }
-                $process = Process::fromShellCommandline("cp {$this->triportraitTreeService->getPrintPathInDataFolder($shooting->getFolder(), $shooting->getPrintFilename())} {$this->triportraitTreeService->getPublicImagesFolderPath()}", timeout: null);
+                $process = Process::fromShellCommandline("cp \"{$this->triportraitTreeService->getPrintPathInDataFolder($shooting->getFolder(), $shooting->getPrintFilename())}\" {$this->triportraitTreeService->getPublicImagesFolderPath()}", timeout: null);
                 $process->mustRun(null);
                 $singles_filenames = $this->triportraitTreeService->getSinglesPathInDataFolder($shooting->getFolder(), $shooting->getSingleFilenames());
                 $singles_to_copy = implode(" ", $singles_filenames);

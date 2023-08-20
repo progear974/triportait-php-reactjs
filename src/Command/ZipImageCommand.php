@@ -47,12 +47,14 @@ class ZipImageCommand extends Command
         $pathPrint = $this->triportraitTreeService->getPrintPathInDataFolder($shooting->getFolder(), $shooting->getPrintFilename());
         if (!file_exists($pathPrint)) {
             print_r($pathPrint);
+            print_r("\n")
             return false;
         }
         foreach ($shooting->getSingleFilenames() as $single) {
             $path = $this->triportraitTreeService->getSinglePathInDataFolder($shooting->getFolder(), $single);
             if (!file_exists($path)) {
                 print_r($path);
+                print_r("\n")
                 return false;
             }
         }
